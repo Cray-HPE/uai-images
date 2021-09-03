@@ -1,0 +1,95 @@
+@Library('csm-shared-library') _
+
+pipeline {
+    agent {
+        label "metal-gcp-builder"
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: "10"))
+        timestamps()
+    }
+
+    environment {
+        NAME = "cray-uai-images"
+        VERSION = getDockerBuildVersion(isStable: env.IS_STABLE)
+        IS_STABLE = getBuildIsStable()
+        BUILD_METADATA = getRpmRevision(isStable: env.IS_STABLE)
+
+        // Basic Simple UAI Image
+        BASIC_UAI_DIR = "uai-images/basic_uai"
+        BASIC_UAI_IMG_NAME = "cray-uai-sles15sp2"
+        BASIC_UAI_DESCRIPTION = "A simple UAI image intended for initial sanity testing of UAS/UAI on a newly installed or updated system"
+        BASIC_UAI_DOCKER_ARGS = getDockerBuildArgs(name: env.BASIC_UAI_IMG_NAME, description: env.BASIC_UAI_DESCRIPTION)
+
+        // Broker UAI
+        BROKER_UAI_DIR = "uai-images/broker_uai"
+        BROKER_UAI_IMG_NAME = "cray-uai-broker"
+        BROKER_UAI_DESCRIPTION = "An image used to construct Broker UAIs, customizable using volumen mounts in a UAI Class"
+        BROKER_UAI_DOCKER_ARGS = getDockerBuildArgs(name: env.BROKER_UAI_IMG_NAME, description: env.BROKER_UAI_DESCRIPTION)
+
+        // Update UAS Job
+        UPDATE_UAS_DIR = "update-uas"
+        UPDATE_UAS_IMG_NAME = "update-uas"
+        UPDATE_UAS_DESCRIPTION = "The image used by the 'update-uas' K8s job which sets up / updates UAS configuration on deployment"
+        UPDATE_UAS_DOCKER_ARGS = getDockerBuildArgs(name: env.UPDATE_UAS_IMG_NAME, description: env.UPDATE_UAS_DESCRIPTION)
+        UPDATE_UAS_CHART_NAME = "update-uas"
+        UPDATE_UAS_CHART_VERSION = getChartVersion(version: env.VERSION)
+    }
+
+    stages {
+        stage("Test") {
+            steps {
+                sh "make unit_test"
+            }
+        }
+        stage("Build") {
+            parallel {
+                stage('Image') {
+                    steps {
+                        sh "make docker"
+                    }
+                }
+
+                stage('Chart') {
+                    steps {
+                        sh "make chart"
+                    }
+                }
+
+            }
+        }
+
+
+        stage('Publish') {
+            steps {
+                script {
+                    publishCsmDockerImage(image: env.BASIC_UAI_IMG_NAME, tag: env.VERSION, isStable: env.IS_STABLE,
+                                          snykTargetFile: "${WORKSPACE}/uai-images/basic_uai/Dockerfile"
+                    )
+                    publishCsmDockerImage(image: env.BROKER_UAI_IMG_NAME, tag: env.VERSION, isStable: env.IS_STABLE,
+                                          snykTargetFile: "${WORKSPACE}/uai-images/broker_uai/Dockerfile"
+                    )
+                    publishCsmDockerImage(image: env.UPDATE_UAS_IMG_NAME, tag: env.VERSION, isStable: env.IS_STABLE,
+                                          snykTargetFile: "${WORKSPACE}/update-uas/Dockerfile"
+                    )
+                    publishCsmHelmCharts(component: env.UPDATE_UAS_CHART_NAME, isStable: env.IS_STABLE,
+                                         chartsPath: "${WORKSPACE}/update-uas/kubernetes/.packaged"
+                    )
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                // Clean up after testing and building...
+                sh "make clean"
+
+                // Own files so jenkins can clean them up later
+                postChownFiles()
+            }
+        }
+    }
+}

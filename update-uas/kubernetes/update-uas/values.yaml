@@ -1,0 +1,79 @@
+# MIT License
+#
+# (C) Copyright [2021] Hewlett Packard Enterprise Development LP
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+
+# Job settings (see templates/job.yaml)
+job:
+  backoffLimit: 20
+  annotations: {}
+  labels: {}
+
+# Job execution container settings (see templates/job.yaml)
+container:
+  image:
+    registry: dtr.dev.cray.com
+    repository: cray/update-uas
+    pullPolicy: IfNotPresent
+  livenessProbe:
+    exec:
+      command:
+      - "sh"
+      - "-ce"
+      - "true"
+    initialDelaySeconds: 60
+    periodSeconds: 60
+  readinessProbe:
+    exec:
+      command:
+      - "sh"
+      - "-ce"
+      - "true"
+    initialDelaySeconds: 60
+    periodSeconds: 60
+
+# Information about UAI images to be registered and which image
+# should be used as the default image if none is already
+# designated in the UAS config.  These names will be massaged to
+# set their tags to the 'appVersion' of the chart on
+# registration.
+#
+# The default image name needs to match the name of one of
+# the images in the list or registration will fail.  If the
+# UAS has already been configured for a default image, that
+# will be left unchanged by the registration.
+images:
+  registry: registry.local
+  list:
+    - "cray/cray-uai-sles15sp2"
+  default: "cray/cray-uai-sles15sp2"
+
+global:
+  appVersion: 
+global:
+  appVersion: 1.2.4
+global:
+  appVersion: 1.2.4
+global:
+  appVersion: 1.2.4
+global:
+  appVersion: 1.2.4
+global:
+  appVersion: 1.2.4

@@ -1,0 +1,103 @@
+{{/*
+MIT License
+
+(C) Copyright [2021] Hewlett Packard Enterprise Development LP
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+*/}}
+{{- $uaiRegistry := .Values.images.registry }}
+{{- $appVersion := include "update-uas.app-version" . }}
+{{- $jobImageTag := .Values.container.image.tag | default $appVersion}}
+{{- $jobVersion := $appVersion | replace "_" "-"}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: update-uas-{{$jobVersion}}
+  labels:
+    {{- include "update-uas.labels" . | nindent 4 }}
+  annotations:
+    {{- include "update-uas.annotations" . | nindent 4 }}
+spec:
+  backoffLimit: {{ .Values.job.backoffLimit }}
+  completions: 1
+  parallelism: 1
+  template:
+    metadata:
+      labels:
+        job-name: update-uas-{{$jobVersion}}
+    spec:
+      restartPolicy: {{ .Values.job.restartPolicy | default "OnFailure" }}
+      containers:
+      - name: {{ .Values.container.name | default "update-uas" }}
+        image: '{{ .Values.container.image.registry}}/{{ .Values.container.image.repository }}:{{$jobImageTag}}'
+        imagePullPolicy: {{ .Values.container.image.pullPolicy | default "IfNotPresent" }}
+        {{- if .Values.container.env -}}
+        env:
+          {{- toYaml .Values.container.env | nindent 10 -}}
+        {{- end }}
+        {{- if .Values.container.envFrom }}
+        envFrom:
+           {{- toYaml .Values.container.envFrom | nindent 10 -}}
+        {{- end }}
+        command:
+        - 'python3'
+        - '/app/src/update_uas.py'
+        {{- if .Values.images.default }}
+        - '-d'
+        - '{{ $uaiRegistry }}/{{ .Values.images.default }}:{{$appVersion}}'
+        {{- end }}
+        {{- if .Values.images.list }}
+        {{- range .Values.images.list }}
+        - '{{$uaiRegistry}}/{{ . }}:{{$appVersion}}'
+        {{- end }}
+        {{- end }}
+        {{- if .Values.container.args }}
+        args:
+          {{- toYaml .Values.container.args | nindent 10 -}}
+        {{- end }}
+        {{- if .Values.container.ports }}
+        ports:
+          {{- toYaml .Values.container.ports | nindent 10 -}}
+        {{- end }}
+        {{- if .Values.container.livenessProbe }}
+        livenessProbe:
+          {{- toYaml .Values.container.livenessProbe | nindent 10 -}}
+        {{- end }}
+        {{- if .Values.container.readinessProbe }}
+        readinessProbe:
+          {{- toYaml .Values.container.readinessProbe | nindent 10 -}}
+        {{- end }}
+        {{- if .Values.container.resources }}
+        resources:
+          {{- toYaml .Values.container.resources | nindent 10 -}}
+        {{- end }}
+        {{- if .Values.container.lifecycle }}
+        lifecycle:
+          {{- toYaml .Values.container.lifecycle | nindent 10 -}}
+        {{- end }}
+        {{- if .Values.container.securityContext }}
+        securityContext:
+          {{- toYaml .Values.container.securityContext | nindent 10 -}}
+        {{- end }}
+        {{- if .Values.container.terminationMessagePath }}
+        terminationMessagePath: {{ .Values.container.terminationMessagePath | quote }}
+        {{- end }}
+        {{- if .Values.container.workingDir }}
+        workingDir: {{ .Values.container.workingDir | quote }}
+        {{- end }}
