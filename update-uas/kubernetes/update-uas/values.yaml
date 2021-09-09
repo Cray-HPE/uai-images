@@ -63,17 +63,5 @@ images:
   registry: registry.local
   list:
     - "cray/cray-uai-sles15sp2"
+    - "cray/cray-uai-broker"
   default: "cray/cray-uai-sles15sp2"
-
-global:
-  appVersion: 
-global:
-  appVersion: 1.2.4
-global:
-  appVersion: 1.2.4
-global:
-  appVersion: 1.2.4
-global:
-  appVersion: 1.2.4
-global:
-  appVersion: 1.2.4
