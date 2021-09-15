@@ -22,7 +22,7 @@
 
 # Job settings (see templates/job.yaml)
 job:
-  backoffLimit: 20
+  backoffLimit: 200
   annotations: {}
   labels: {}
 
