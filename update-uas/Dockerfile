@@ -28,9 +28,7 @@ RUN pip3 install --upgrade pip
 RUN mkdir -p /app/src
 COPY requirements.txt /app
 COPY src/update_uas.py /app/src/update_uas.py
-RUN pip3 install --no-cache-dir \
-                 --index-url http://dst.us.cray.com/dstpiprepo/simple \
-                 --trusted-host dst.us.cray.com -r /app/requirements.txt
+RUN pip3 install --no-cache-dir -r /app/requirements.txt
 
 # Run unit tests
 FROM base as testing
