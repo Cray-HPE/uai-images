@@ -33,7 +33,7 @@ RUN pip3 install --no-cache-dir -r /app/requirements.txt
 # Run unit tests
 FROM base as testing
 COPY src/test_update_uas.py /app/src/test_update_uas.py
-COPY noxfile.py .coveragerc requirements-lint.txt requirements-style.txt requirements-test.txt /app/
+COPY pylintrc noxfile.py .coveragerc requirements-lint.txt requirements-style.txt requirements-test.txt /app/
 RUN pip3 install nox
 RUN pip3 install --no-cache-dir -r /app/requirements-lint.txt
 RUN pip3 install --no-cache-dir -r /app/requirements-style.txt
