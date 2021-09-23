@@ -25,7 +25,7 @@ pipeline {
         // Broker UAI
         BROKER_UAI_DIR = "uai-images/broker_uai"
         BROKER_UAI_IMG_NAME = "cray-uai-broker"
-        BROKER_UAI_DESCRIPTION = "An image used to construct Broker UAIs, customizable using volumen mounts in a UAI Class"
+        BROKER_UAI_DESCRIPTION = "An image used to construct Broker UAIs, customizable using volume mounts in a UAI Class"
         BROKER_UAI_DOCKER_ARGS = getDockerBuildArgs(name: env.BROKER_UAI_IMG_NAME, description: env.BROKER_UAI_DESCRIPTION)
 
         // Update UAS Job

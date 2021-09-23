@@ -22,10 +22,6 @@
 
 FROM arti.dev.cray.com/baseos-docker-master-local/sles15sp2:latest
 
-
-ARG SLURM_REPO=http://car.dev.cray.com/artifactory/wlm-slurm/RM/sle15_sp2_cn/x86_64/release/shasta-1.4/
-ARG PBS_REPO=http://car.dev.cray.com/artifactory/wlm-pbs/RM/sle15_sp2_cn/x86_64/release/shasta-1.4/
-
 RUN zypper addrepo --no-gpgcheck -f https://artifactory.algol60.net/artifactory/csm-rpms/hpe/stable/ algol60
 RUN zypper ref && \
     zypper update -y && \

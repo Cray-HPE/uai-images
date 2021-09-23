@@ -35,7 +35,7 @@ The UAS/UAI self test mechanism uses a special UAI which contains the self-test 
 
 ### Update UAS Job
 
-The Update UAS Kubernetes job registers the UAI images generated here with UAS as needed, and makes other necessary adjustments to UAS configuration to adapt to image version changes.  The job runs when its helm chart is deployed or udgraded and ensures that the HPE supplied container images and related configuration are kept up to date.
+The Update UAS Kubernetes job registers the UAI images generated here with UAS as needed, and makes other necessary adjustments to UAS configuration to adapt to image version changes.  The job runs when its helm chart is deployed or upgraded and ensures that the HPE supplied container images and related configuration are kept up to date.
 
 ## Development
 
@@ -47,7 +47,7 @@ Builds, unit testing and chart testing are run out of Makefiles driven by a top-
 
 These are available for most platforms, see installation instructions for your specific system.
 
-Builds also run under Jenkins in the algo60 project.  All feature branches are built as unstable, while tags are built as stable.
+Builds also run under Jenkins in the algol60 project.  All feature branches are built as unstable, while tags are built as stable.
 
 ### Native Builds
 
@@ -101,7 +101,7 @@ in any of the sub-directories containing a `Makefile`.
 
 ## Release
 
-To relase a stable version of this code merge your changes into `main` and add a tag of the form:
+To release a stable version of this code merge your changes into `main` and add a tag of the form:
 
 ```
 v1.2.4
