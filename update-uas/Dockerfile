@@ -46,4 +46,5 @@ ENTRYPOINT ["/bin/sh", "-ce", "cd /app && NOX_DOCKER_BUILD=yes nox"]
 # the entrypoint here is a stub because the real entrypoint will be set
 # by the Helm chart based on the image list / versions.
 FROM base as app
+USER 65534:65534
 ENTRYPOINT ["/bin/echo", "Override this entrypoint to run application"]
