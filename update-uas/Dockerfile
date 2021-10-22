@@ -19,7 +19,7 @@
 # OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
-FROM alpine:3.14.0 as base
+FROM alpine:3.14.2 as base
 
 run apk update && apk add python3 py3-pip
 run apk upgrade
@@ -46,4 +46,5 @@ ENTRYPOINT ["/bin/sh", "-ce", "cd /app && NOX_DOCKER_BUILD=yes nox"]
 # the entrypoint here is a stub because the real entrypoint will be set
 # by the Helm chart based on the image list / versions.
 FROM base as app
+USER 65534:65534
 ENTRYPOINT ["/bin/echo", "Override this entrypoint to run application"]
