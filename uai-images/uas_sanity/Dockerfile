@@ -61,4 +61,6 @@ ENTRYPOINT ["/bin/sh", "-ce", "cd /app && NOX_DOCKER_BUILD=yes nox"]
 
 FROM base as app
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
-ENTRYPOINT /usr/bin/uai-ssh.sh  # ERIC CHANGE THIS TO RUN THE TEST WHEN THE TIME COMES
+COPY entrypoint.sh /usr/bin/entrypoint.sh
+RUN chmod 755 /usr/bin/entrypoint.sh
+ENTRYPOINT /usr/bin/entrypoint.sh  # ERIC CHANGE THIS TO RUN THE TEST WHEN THE TIME COMES

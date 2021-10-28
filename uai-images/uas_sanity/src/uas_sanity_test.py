@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 """
 MIT License
 
@@ -35,6 +37,7 @@ from logging import (
 
 from requests.exceptions import RequestException
 import requests
+from kubernetes import client, config
 
 logger = Logger("uas_sanity")
 
@@ -45,6 +48,14 @@ HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
+
+
+def init_k8s_client():
+    """Initialize the kubernetes client so we can talk to kubernetes
+
+    """
+    client.load_incluster_config()
+
 
 def wait_for_update_uas(timeout=600):
     """Wait for up to 'timeout' seconds for the update-uas job to
@@ -127,6 +138,7 @@ def main(argv):
     """Main entry point.
 
     """
+    init_k8s_client()
     return 0
 
 
