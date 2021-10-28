@@ -24,16 +24,17 @@ NAME ?= cray-uai-images
 UPDATE_UAS_DIR ?= update-uas
 BASIC_UAI_DIR ?= uai-images/basic_uai
 BROKER_UAI_DIR ?= uai-images/broker_uai
+SANITY_UAI_DIR ?= uai-images/uas_sanity
 VERSION ?= $(shell cat .version)
 
 all: chart docker
 
 chart:  chart_test chart_package
-docker: docker_basic_uai docker_broker_uai docker_update_uas
+docker: docker_basic_uai docker_broker_uai docker_sanity_uai docker_update_uas
 chart_package: chart_package_update_uas
-unit_test: chart_test unit_test_update_uas
+unit_test: chart_test unit_test_update_uas unit_test_sanity_uai
 chart_test: chart_test_update_uas
-clean: clean_basic_uai clean_broker_uai clean_update_uas
+clean: clean_basic_uai clean_broker_uai clean_sanity_uai clean_update_uas
 
 docker_basic_uai:
 	(cd ${BASIC_UAI_DIR}; make docker)
@@ -46,6 +47,15 @@ docker_broker_uai:
 
 clean_broker_uai:
 	(cd ${BROKER_UAI_DIR}; make clean)
+
+docker_sanity_uai:
+	(cd ${SANITY_UAI_DIR}; make docker)
+
+clean_sanity_uai:
+	(cd ${SANITY_UAI_DIR}; make clean)
+
+unit_test_sanity_uai:
+	(cd ${SANITY_UAI_DIR}; make unit_test)
 
 docker_update_uas:
 	(cd ${UPDATE_UAS_DIR}; make docker)
