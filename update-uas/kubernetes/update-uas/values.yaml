@@ -26,6 +26,12 @@ job:
   annotations: {}
   labels: {}
 
+# UAS related configuration needed for update-uas
+uasConfig:
+  broker_namespace: "uas"
+  uai_namespace: "user"
+  uas_release_namespace: "services"
+
 # Job execution container settings (see templates/job.yaml)
 container:
   image:
@@ -65,3 +71,6 @@ images:
     - "cray/cray-uai-sles15sp2"
     - "cray/cray-uai-broker"
   default: "cray/cray-uai-sles15sp2"
+
+global:
+  appVersion: 1.2.4
