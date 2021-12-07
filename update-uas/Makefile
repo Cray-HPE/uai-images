@@ -44,6 +44,7 @@ docker_test:
 chart_setup:
 	mkdir -p kubernetes/.packaged
 	printf "\nglobal:\n  appVersion: ${VERSION}" >> kubernetes/${UPDATE_UAS_CHART_NAME}/values.yaml
+	sed -e "s%\(image: [^:]*:\).*%\1${UPDATE_UAS_CHART_VERSION}%" -i"" "kubernetes/${UPDATE_UAS_CHART_NAME}/Chart.yaml"
 
 chart_package: chart_setup
 	helm dep up kubernetes/${UPDATE_UAS_CHART_NAME}
