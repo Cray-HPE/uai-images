@@ -43,7 +43,6 @@ docker_test:
 
 chart_setup:
 	mkdir -p kubernetes/.packaged
-	pip3 install PyYAML
 	python3 ./chart_setup.py \
 		-v kubernetes/${UPDATE_UAS_CHART_NAME}/values.yaml \
 		-c kubernetes/${UPDATE_UAS_CHART_NAME}/Chart.yaml \

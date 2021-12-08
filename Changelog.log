@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.2] - 2021-12-08
+- Switch from DTR images to algol60 images
+- Add image annotations to update-uas Helm Chart spec
+
 ## [1.3.0] - 2021-10-22
 - Update alpine version in update-uas to 3.14.2
 - Change to user nobody in update-uas
