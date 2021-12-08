@@ -53,7 +53,7 @@ pipeline {
 
                 stage('Chart') {
                     steps {
-                        sh "make chart"
+                        sh "pip3 install PyYAML && make chart"
                     }
                 }
 
