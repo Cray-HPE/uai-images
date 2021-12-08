@@ -43,8 +43,11 @@ docker_test:
 
 chart_setup:
 	mkdir -p kubernetes/.packaged
-	printf "\nglobal:\n  appVersion: ${VERSION}" >> kubernetes/${UPDATE_UAS_CHART_NAME}/values.yaml
-	sed -e "s%\(image: [^:]*:\).*%\1${UPDATE_UAS_CHART_VERSION}%" -i"" "kubernetes/${UPDATE_UAS_CHART_NAME}/Chart.yaml"
+	pip3 install PyYAML
+	python3 ./chart_setup.py \
+		-v kubernetes/${UPDATE_UAS_CHART_NAME}/values.yaml \
+		-c kubernetes/${UPDATE_UAS_CHART_NAME}/Chart.yaml \
+		-t ${VERSION}
 
 chart_package: chart_setup
 	helm dep up kubernetes/${UPDATE_UAS_CHART_NAME}
