@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.3.2] - 2021-12-08
+## [1.3.3] - 2021-12-09
 - Switch from DTR images to algol60 images
 - Add image annotations to update-uas Helm Chart spec
 
