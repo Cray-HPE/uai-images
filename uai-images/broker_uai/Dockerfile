@@ -24,7 +24,7 @@ FROM arti.dev.cray.com/baseos-docker-master-local/sles15sp2:latest as base
 
 RUN zypper ref
 RUN zypper update -y
-RUN zypper addrepo --no-gpgcheck -f https://artifactory.algol60.net/artifactory/csm-rpms/hpe/stable/ algol60
+RUN zypper addrepo --no-gpgcheck -f https://artifactory.algol60.net/artifactory/csm-rpms/hpe/stable/sle-15sp2 algol60
 
 WORKDIR /app
 
