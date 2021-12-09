@@ -123,7 +123,7 @@ def render_chart_spec(chart_spec, values, version_tag):
     registry = images.get('registry', default_registry)
     image_list = images.get('list', [])
     composed_images = [
-        "%s/%s:%s" % (registry, image, version_tag)
+        dict(name=image, image="%s/%s:%s" % (registry, image, version_tag))
         for image in image_list
     ]
     if composed_images:
