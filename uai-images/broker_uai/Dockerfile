@@ -53,7 +53,9 @@ FROM base as application
 # Install packages used by the entrypoint script
 RUN zypper install -y openssh \
                       sssd \
-                      vim
+                      vim \
+                      jq \
+                      curl
 
 # Bring in the broker entrypoint and some config
 COPY ./broker/nsswitch.conf /etc/nsswitch.conf
