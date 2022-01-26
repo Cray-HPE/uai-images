@@ -69,7 +69,8 @@ RUN mkdir -p /var/lib/sss/db \
              /var/lib/sss/mc \
              /var/lib/sss/pipes \
              /var/lib/sss/pipes/private \
-             /var/lib/sss/pubconf
+             /var/lib/sss/pubconf \
+             /etc/sssd/conf.d
 
 # Set the locale for craycli
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8

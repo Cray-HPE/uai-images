@@ -39,6 +39,8 @@ RUN zypper ref && \
                       which
 RUN zypper install -y --allow-unsigned-rpm cray-uai-util
 
+RUN mkdir -p /etc/sssd/conf.d
+
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 
 ENTRYPOINT /usr/bin/uai-ssh.sh
