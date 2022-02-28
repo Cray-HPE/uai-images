@@ -1,0 +1,125 @@
+#! /bin/sh
+# MIT License
+#
+# (C) Copyright [2022] Hewlett Packard Enterprise Development LP
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+compose_pwd() {
+    local USER=${1}
+    local LOGIN_UID=16563
+    local LOGIN_GID=12345
+    local GECOS="Test User"
+    local HOMEDIR=${2}
+    local SHELL=/bin/bash
+    echo "${USER}::${LOGIN_UID}:${LOGIN_GID}:${GECOS}:${HOMEDIR}:${SHELL}"
+    return 0
+}
+: ${USER}:="vshasta"}
+: ${LOGIN_USER:="${USER}"}
+: ${LOGIN_HOMEDIR:="/home/users/${USER}"}
+: ${LOGIN_PWD:="$(compose_pwd ${LOGIN_USER} ${LOGIN_HOMEDIR})"}
+: ${LOGIN_PUBLICKEY:="$(cat ~/.ssh/id_rsa.pub)"}
+: ${BROKER_SWITCHBOARD_BRANCH:="master"}
+: ${BROKER_VERSION:="$(cat ../../.version)"}
+
+set -e
+
+usage() {
+    (
+        if [ -n "${1}" ]; then
+            echo ${1}
+        fi
+        echo "usage: managevsha [options] [branch-name]"
+        echo ""
+        echo "where options are:"
+        echo "    -h"
+        echo "        Display this usage message"
+        echo "    -b <switchboard-branch>"
+        echo "        Specify the branch or tag of the switchboard github repository to use"
+        echo "        when building the docker image.  Default = master."
+        echo "    -d <homedir>"
+        echo "        Specify the home directory to be used for the login user set up for the"
+        echo "        broker - default '/home/users/$USER"
+        echo "    -k  <key-path>"
+        echo "        Specify  the public key file to authorize in the broker for the login user"
+        echo "        set up for the broker - default '/home/users/$USER/.ssh/id_rsa.pub"
+        echo "    -p  <passwd-str>"
+        echo "        Specify the passwd file entry string to be used for the login user set up"
+        echo "        for the broker.  Default is composed from the username and the home directory"
+        echo "    -u  <username>"
+        echo "        Specify the username for the login user set up for the broker - default '${USER}'"
+        echo "    -v  <broker-version-tag>"
+        echo "        Specify the version tag to be used in making the dev Broker UAI image -"
+        echo "        default $(cat ../../.version) (based on the current version file)."
+    ) >&2
+    exit 1
+}
+
+if ! args=$(getopt hb:d:k:p:u:v: $*)
+then
+    usage
+fi
+set -- ${args}
+for opt
+do
+    case "${opt}"
+    in
+        -h)
+            # Usage message
+            usage
+            exit 0
+            shift;;
+        -b)
+            # Set the Broker's Switchboard Branch name
+            BROKER_SWITCHBOARD_BRANCH="${2}"
+            shift; shift;;
+        -d)
+            # Set the login user's home dir
+            LOGIN_HOMEDIR="${2}"
+            shift; shift;;
+        -k)
+            # Set the login user's public key
+            LOGIN_PUBLICKEY="$(cat ${2})"
+            shift; shift;;
+        -p)
+            # Set the login user's passwd file entry string
+            LOGIN_PWD="${2}"
+            shift; shift;;
+        -u)
+            # Set the login user's name
+            LOGIN_USER="${2}"
+            shift; shift;;
+        -v)
+            # Set the broker image version tag
+            BROKER_VERSION="${2}"
+            shift; shift;;
+        --)
+            shift; break;;
+    esac
+done
+
+docker build -t cray-uai-broker-dev:${BROKER_VERSION} \
+       --build-arg LOGIN_USER="${LOGIN_USER}" \
+       --build-arg LOGIN_PWD="${LOGIN_PWD}" \
+       --build-arg LOGIN_HOMEDIR="${LOGIN_HOMEDIR}" \
+       --build-arg LOGIN_PUBLICKEY="${LOGIN_PUBLICKEY}" \
+       --build-arg BROKER_SWITCHBOARD_BRANCH="${BROKER_SWITCHBOARD_BRANCH}" \
+       -f Dockerfile.dev \
+       .
+

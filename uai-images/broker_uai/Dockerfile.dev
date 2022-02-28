@@ -1,0 +1,81 @@
+# MIT License
+#
+# (C) Copyright [2020] Hewlett Packard Enterprise Development LP
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+# This Dockerfile builds a Broker UAI image that is set up to work well
+# on vshasta without any special customization.  Use the `mk_dev_broker`
+# script in this directory to build one for yourself if you are working
+# on `switchboard` or other Broker UAI components.
+FROM artifactory.algol60.net/registry.suse.com/suse/sle15:15.3 as base
+RUN zypper ref
+RUN zypper update -y
+RUN zypper addrepo --no-gpgcheck -f https://artifactory.algol60.net/artifactory/csm-rpms/hpe/stable/sle-15sp2 algol60
+# Install packages that are useful for dev
+RUN zypper install -y go \
+                      tar \
+                      bzip2 \
+                      openssh \
+                      sssd \
+                      vim \
+                      emacs \
+                      git \
+                      curl \
+                      jq
+
+FROM base as application
+ARG LOGIN_USER="vshasta"
+ARG LOGIN_PWD="vshasta::16563:12345:Virtual Shasta:/home/users/vshasta:/bin/bash"
+ARG LOGIN_HOMEDIR="/home/users/vshasta"
+ARG LOGIN_PUBLICKEY=""
+ARG BROKER_SWITCHBOARD_BRANCH="master"
+
+RUN if [ -n "$LOGIN_PWD" ]; then echo "$LOGIN_PWD" >> /etc/passwd; fi
+RUN if [ -n "$LOGIN_HOMEDIR" ]; then mkdir -p "$LOGIN_HOMEDIR"/.ssh; fi
+RUN if [ -n "$LOGIN_USER" -a -n "$LOGIN_HOMEDIR" -a -n "$LOGIN_PUBLICKEY" ]; then echo "$LOGIN_PUBLICKEY" >> $LOGIN_HOMEDIR/.ssh/authorized_keys; fi
+RUN if [ -n "$LOGIN_USER" -a -n "$LOGIN_HOMEDIR" ]; then chown -R "$LOGIN_USER" "$LOGIN_HOMEDIR"; fi
+
+# Obtain and build the requested version of switchboard
+RUN mkdir /app
+RUN ( cd /app && git clone http://github.com/Cray-HPE/switchboard.git )
+RUN ( cd /app/switchboard && git checkout $BROKER_SWITCHBOARD_BRANCH )
+RUN ( cd /app/switchboard && go build -o /usr/bin/switchboard . )
+RUN if [ -n "$LOGIN_USER" ]; then chown -R $LOGIN_USER /app; fi
+RUN mkdir /etc/switchboard
+RUN cp /app/switchboard/src/sshd_config /etc/switchboard/sshd_config
+
+WORKDIR /app
+
+# Bring in the broker entrypoint and some config
+COPY ./broker/nsswitch.conf /etc/nsswitch.conf
+COPY ./broker/entrypoint.sh /app/broker/entrypoint.sh
+
+# Create directories for sssd
+RUN mkdir -p /var/lib/sss/db \
+             /var/lib/sss/keytabs \
+             /var/lib/sss/mc \
+             /var/lib/sss/pipes \
+             /var/lib/sss/pipes/private \
+             /var/lib/sss/pubconf
+
+# Set the locale for craycli
+ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
+
+ENTRYPOINT ["/app/broker/entrypoint.sh"]

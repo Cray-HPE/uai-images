@@ -21,16 +21,19 @@
 # OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
-
 echo "Configure PAM to use sssd..."
 pam-config -a --sss --mkhomedir
 
 echo "Generating broker host keys..."
-ssh-keygen -A
+# If the installed version of switchboard supports shared keys for replicas,
+# generate the key that way.  If that fails, fall back to a local host key.
+/usr/bin/switchboard hostkey || ssh-keygen -A
 
 echo "Checking for UAI_CREATION_CLASS..."
 if ! [ -z $UAI_CREATION_CLASS ]; then
     echo UAI_CREATION_CLASS=$UAI_CREATION_CLASS >> /etc/environment
+    echo UAI_SHARED_SECRET_PATH=$UAI_SHARED_SECRET_PATH >> /etc/environment
+    echo UAI_REPLICAS=$UAI_REPLICAS >> /etc/environment
 fi
 
 echo "Starting sshd..."
