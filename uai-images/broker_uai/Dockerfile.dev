@@ -19,50 +19,53 @@
 # OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
+#
+# This Dockerfile builds a Broker UAI image that is set up to work well
+# on vshasta without any special customization.  Use the `mk_dev_broker`
+# script in this directory to build one for yourself if you are working
+# on `switchboard` or other Broker UAI components.
 FROM artifactory.algol60.net/registry.suse.com/suse/sle15:15.3 as base
-
 RUN zypper ref
 RUN zypper update -y
 RUN zypper addrepo --no-gpgcheck -f https://artifactory.algol60.net/artifactory/csm-rpms/hpe/stable/sle-15sp2 algol60
-
-WORKDIR /app
-
-FROM base as build 
-
-RUN zypper install -y go tar bzip2
-RUN zypper --non-interactive source-install cray-switchboard
-RUN ( \
-     cd /usr/src/packages/SOURCES && \
-     bunzip2 cray-switchboard-*.tar.bz2 && \
-     tar xf cray-switchboard-*.tar && \
-     mkdir /app/switchboard && \
-     cp -r cray-switchboard-*/* /app/switchboard \
-    )
-RUN ( \
-     cd /app/switchboard && \
-     export GO111MODULE=on && \
-     go get && \
-     go build -o switchboard main.go \
-    )
-
-# Install switchboard
-
-FROM base as application
-
-# Install packages used by the entrypoint script
-RUN zypper install -y openssh \
+# Install packages that are useful for dev
+RUN zypper install -y go \
+                      tar \
+                      bzip2 \
+                      openssh \
                       sssd \
                       vim \
-                      jq \
-                      curl
+                      emacs \
+                      git \
+                      curl \
+                      jq
+
+FROM base as application
+ARG LOGIN_USER="vshasta"
+ARG LOGIN_PWD="vshasta::16563:12345:Virtual Shasta:/home/users/vshasta:/bin/bash"
+ARG LOGIN_HOMEDIR="/home/users/vshasta"
+ARG LOGIN_PUBLICKEY=""
+ARG BROKER_SWITCHBOARD_BRANCH="master"
+
+RUN if [ -n "$LOGIN_PWD" ]; then echo "$LOGIN_PWD" >> /etc/passwd; fi
+RUN if [ -n "$LOGIN_HOMEDIR" ]; then mkdir -p "$LOGIN_HOMEDIR"/.ssh; fi
+RUN if [ -n "$LOGIN_USER" -a -n "$LOGIN_HOMEDIR" -a -n "$LOGIN_PUBLICKEY" ]; then echo "$LOGIN_PUBLICKEY" >> $LOGIN_HOMEDIR/.ssh/authorized_keys; fi
+RUN if [ -n "$LOGIN_USER" -a -n "$LOGIN_HOMEDIR" ]; then chown -R "$LOGIN_USER" "$LOGIN_HOMEDIR"; fi
+
+# Obtain and build the requested version of switchboard
+RUN mkdir /app
+RUN ( cd /app && git clone http://github.com/Cray-HPE/switchboard.git )
+RUN ( cd /app/switchboard && git checkout $BROKER_SWITCHBOARD_BRANCH )
+RUN ( cd /app/switchboard && go build -o /usr/bin/switchboard . )
+RUN if [ -n "$LOGIN_USER" ]; then chown -R $LOGIN_USER /app; fi
+RUN mkdir /etc/switchboard
+RUN cp /app/switchboard/src/sshd_config /etc/switchboard/sshd_config
+
+WORKDIR /app
 
 # Bring in the broker entrypoint and some config
 COPY ./broker/nsswitch.conf /etc/nsswitch.conf
 COPY ./broker/entrypoint.sh /app/broker/entrypoint.sh
-
-# Copy switchboard binary and configs from the build layer
-COPY --from=build /app/switchboard/src/sshd_config /etc/switchboard/sshd_config
-COPY --from=build /app/switchboard/switchboard /usr/bin/switchboard
 
 # Create directories for sssd
 RUN mkdir -p /var/lib/sss/db \
