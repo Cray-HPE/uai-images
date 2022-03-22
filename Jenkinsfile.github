@@ -51,6 +51,12 @@ pipeline {
         BROKER_UAI_DESCRIPTION = "An image used to construct Broker UAIs, customizable using volume mounts in a UAI Class"
         BROKER_UAI_DOCKER_ARGS = getDockerBuildArgs(name: env.BROKER_UAI_IMG_NAME, description: env.BROKER_UAI_DESCRIPTION)
 
+        // Gateway Test UAI
+        GATEWAY_TEST_UAI_DIR = "uai-images/gateway_test_uai"
+        GATEWAY_TEST_UAI_IMG_NAME = "cray-uai-gateway-test"
+        GATEWAY_TEST_UAI_DESCRIPTION = "An image used to run gateway tests from a UAI" 
+        GATEWAY_TEST_UAI_DOCKER_ARGS = getDockerBuildArgs(name: env.GATEWAY_TEST_UAI_IMG_NAME, description: env.GATEWAY_TEST_UAI_DESCRIPTION)
+
         // Update UAS Job
         UPDATE_UAS_DIR = "update-uas"
         UPDATE_UAS_IMG_NAME = "update-uas"
@@ -92,6 +98,9 @@ pipeline {
                     )
                     publishCsmDockerImage(image: env.BROKER_UAI_IMG_NAME, tag: env.VERSION, isStable: env.IS_STABLE,
                                           snykTargetFile: "${WORKSPACE}/uai-images/broker_uai/Dockerfile"
+                    )
+                    publishCsmDockerImage(image: env.GATEWAY_TEST_UAI_IMG_NAME, tag: env.VERSION, isStable: env.IS_STABLE,
+                                          snykTargetFile: "${WORKSPACE}/uai-images/gateway_test_uai/Dockerfile"
                     )
                     publishCsmDockerImage(image: env.UPDATE_UAS_IMG_NAME, tag: env.VERSION, isStable: env.IS_STABLE,
                                           snykTargetFile: "${WORKSPACE}/update-uas/Dockerfile"

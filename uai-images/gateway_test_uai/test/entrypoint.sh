@@ -1,6 +1,8 @@
+#!/bin/sh
+# 
 # MIT License
 #
-# (C) Copyright [2021-2022] Hewlett Packard Enterprise Development LP
+# (C) Copyright 2022 Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -19,28 +21,8 @@
 # OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
-apiVersion: v2
-description: "End User UAI Image Installer Job"
-name: "update-uas"
-version: 1.3.3
-annotations:
-  # 'artifacthub.io/images' below lists the images shipped according to
-  # the following content in values.yaml:
-  #
-  # images:
-  #   registry: artifactory.algol60.net/csm-docker/stable
-  #   list:
-  #   - "cray-uai-sles15sp2"
-  #   - "cray-uai-broker"
-  #   - "cray-uai-gateway-test"
-  #   default: "cray-uai-sles15sp2"
-  #
-  # It is filled in at build time based on the above, so that the packaging
-  # tools can use it to make sure "dependency" images for this chart are
-  # included in the packaging.
-  #
-  # In the built chart, this is a string representation of a YAML list.  In
-  # the source, it should be an empty string.  The 'chart_setup' tool which
-  # is invoked by the 'chart_setup' make target populates it.
-  artifacthub.io/images: ""
-  artifacthub.io/license: MIT
+#
+#
+/usr/sbin/sshd
+
+sleep infinity

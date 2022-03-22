@@ -64,4 +64,5 @@ images:
   list:
     - "cray-uai-sles15sp3"
     - "cray-uai-broker"
+    - "cray-uai-gateway-test"
   default: "cray-uai-sles15sp3"
