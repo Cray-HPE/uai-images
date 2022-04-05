@@ -51,7 +51,10 @@ FROM base as application
 
 # Install packages used by the entrypoint script
 RUN zypper install -y openssh \
-                      sssd \
+                      sssd-ad \
+                      sssd-krb5 \
+                      sssd-ldap \
+                      sssd-proxy \
                       vim \
                       jq \
                       curl

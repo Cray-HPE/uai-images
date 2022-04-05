@@ -21,6 +21,27 @@
 # OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
+
+# A simple function to unconditionally restart a command if it exits.
+# This was implemented instead of enabling systemd in a container for sssd.
+# In certain scenarios, sssd may exit (connectivity issues) and the broker
+# could require sssd for new connections.
+# Callers should make sure the process runs in the foreground and the function
+# itself must be backgrounded for the rest of the script to proceed.
+function process_watcher() {
+
+    if [ -z $1 ]; then
+        echo "process_watcher: No command was specified."
+        exit 1
+    fi
+
+    while true; do
+        $1
+        echo "process_watcher: "$1" exited with exit code $?. Restarting..."
+        sleep 3
+    done
+}
+
 echo "Configure PAM to use sssd..."
 pam-config -a --sss --mkhomedir
 
@@ -36,10 +57,8 @@ if ! [ -z $UAI_CREATION_CLASS ]; then
     echo UAI_REPLICAS=$UAI_REPLICAS >> /etc/environment
 fi
 
-echo "Starting sshd..."
-/usr/sbin/sshd -f /etc/switchboard/sshd_config
-
 echo "Starting sssd..."
-sssd
+process_watcher "sssd -i" &
 
-sleep infinity
+echo "Starting sshd..."
+/usr/sbin/sshd -f /etc/switchboard/sshd_config -D
