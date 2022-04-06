@@ -1,8 +1,8 @@
 #!/bin/bash
-
+#
 # MIT License
 #
-# (C) Copyright [2020-2022] Hewlett Packard Enterprise Development LP
+# (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -21,7 +21,7 @@
 # OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
-
+#
 # A simple function to unconditionally restart a command if it exits.
 # This was implemented instead of enabling systemd in a container for sssd.
 # In certain scenarios, sssd may exit (connectivity issues) and the broker
