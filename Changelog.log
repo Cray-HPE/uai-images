@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2022-04-18
+- Add 'awk' to basic UAI image installed packages
+
 ## [1.4.0] - 2022-02-28
 - Update entrypoint to work with new shared Broker UAI host keys
 - Add development Broker UAI tools
