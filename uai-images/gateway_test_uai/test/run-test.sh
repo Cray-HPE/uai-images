@@ -41,5 +41,5 @@ if [ -z $SYSTEM_DOMAIN ]; then
     exit 1
 fi
 
-/test/gateway-test.py $SYSTEM_DOMAIN $USER_NETWORK 
+/test/gateway-test.py $SYSTEM_DOMAIN uai $USER_NETWORK
 

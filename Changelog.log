@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.1] - 2022-05-02
+- Updates to gateway-test.py 
+
 ## [1.6.0] - 2022-04-19
 - Add cray-uai-gateway-test image
 
