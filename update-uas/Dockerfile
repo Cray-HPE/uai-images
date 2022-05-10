@@ -19,7 +19,7 @@
 # OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
-FROM alpine:3.14.2 as base
+FROM artifactory.algol60.net/csm-docker/stable/docker.io/library/alpine:3 as base
 
 run apk update && apk add python3 py3-pip
 run apk upgrade

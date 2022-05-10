@@ -20,7 +20,7 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-FROM artifactory.algol60.net/registry.suse.com/suse/sle15:15.3 as base
+FROM artifactory.algol60.net/csm-docker/stable/registry.suse.com/suse/sle15:15.3 as base
 
 RUN zypper addrepo --no-gpgcheck -f https://artifactory.algol60.net/artifactory/csm-rpms/hpe/stable/sle-15sp2 algol60
 RUN zypper ref && \

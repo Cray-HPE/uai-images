@@ -19,7 +19,7 @@
 # OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
-FROM artifactory.algol60.net/registry.suse.com/suse/sle15:15.3 as base
+FROM artifactory.algol60.net/csm-docker/stable/registry.suse.com/suse/sle15:15.3 as base
 
 RUN zypper ref
 RUN zypper update -y
