@@ -29,15 +29,22 @@ BROKER_UAI_DIR ?= uai-images/broker_uai
 GATEWAY_TEST_UAI_DIR ?= uai-images/gateway_test_uai
 VERSION ?= $(shell cat .version)
 
-all: chart docker
+all: check-env chart docker
 
 chart:  chart_test chart_package
-docker: docker_basic_uai docker_broker_uai docker_gateway_test_uai docker_update_uas
+docker: check-env docker_basic_uai docker_broker_uai docker_gateway_test_uai docker_update_uas
 chart_package: chart_package_update_uas
 unit_test: chart_test unit_test_update_uas
 chart_test: chart_test_update_uas
 clean: clean_basic_uai clean_broker_uai clean_gateway_test_uai clean_update_uas
 
+check-env:
+ifndef SLES_REPO_USERNAME
+	$(error SLES_REPO_USERNAME is undefined)
+endif
+ifndef SLES_REPO_PASSWORD
+	$(error SLES_REPO_PASSWORD is undefined)
+endif
 docker_basic_uai:
 	(cd ${BASIC_UAI_DIR}; make docker)
 

@@ -24,7 +24,7 @@
 # on vshasta without any special customization.  Use the `mk_dev_broker`
 # script in this directory to build one for yourself if you are working
 # on `switchboard` or other Broker UAI components.
-FROM artifactory.algol60.net/csm-docker/stable/registry.suse.com/suse/sle15:15.3 as base
+FROM artifactory.algol60.net/registry.suse.com/suse/sle15:15.3 as base
 RUN zypper ref
 RUN zypper update -y
 RUN zypper addrepo --no-gpgcheck -f https://artifactory.algol60.net/artifactory/csm-rpms/hpe/stable/sle-15sp2 algol60

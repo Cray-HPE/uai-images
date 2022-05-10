@@ -24,10 +24,18 @@ BROKER_UAI_IMAGE_NAME ?= cray-uai-broker
 BROKER_UAI_DOCKER_ARGS ?= --no-cache --progress plain
 VERSION ?= $(shell cat ../../.version)
 
-all: docker
+all: check-env docker
+
+check-env:
+	ifndef SLES_REPO_USERNAME
+	        $(error SLES_REPO_USERNAME is undefined)
+	endif
+	ifndef SLES_REPO_PASSWORD
+	        $(error SLES_REPO_PASSWORD is undefined)
+	endif
 
 docker:
-	docker build --pull ${BROKER_UAI_DOCKER_ARGS} --tag '${BROKER_UAI_IMAGE_NAME}:${VERSION}' .
+	docker build --pull ${BROKER_UAI_DOCKER_ARGS} --build-arg SLES_REPO_USERNAME --build-arg SLES_REPO_PASSWORD --tag '${BROKER_UAI_IMAGE_NAME}:${VERSION}' .
 
 # No unit test for this image
 unit_test:

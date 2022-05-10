@@ -22,23 +22,34 @@
 
 FROM artifactory.algol60.net/csm-docker/stable/registry.suse.com/suse/sle15:15.3 as base
 
-RUN zypper addrepo --no-gpgcheck -f https://artifactory.algol60.net/artifactory/csm-rpms/hpe/stable/sle-15sp2 algol60
-RUN zypper ref && \
-    zypper update -y && \
-    zypper install -y awk \
-                      curl \
-                      glibc-locale-base \
-                      gzip \
-                      iputils \
-                      jq \
-                      less \
-                      openssh \
-                      rsync \
-                      tar \
-                      vim \
-                      wget \
-                      which
-RUN zypper install -y --allow-unsigned-rpm cray-uai-util
+ARG SLES_REPO_USERNAME
+ARG SLES_REPO_PASSWORD
+ARG SLES_MIRROR="https://${SLES_REPO_USERNAME}:${SLES_REPO_PASSWORD}@artifactory.algol60.net/artifactory/sles-mirror"
+ARG SLES_VERSION=15-SP3
+ARG ARCH=x86_64
+RUN \
+  zypper --non-interactive rr --all && \
+  zypper --non-interactive ar ${SLES_MIRROR}/Products/SLE-Module-Basesystem/${SLES_VERSION}/${ARCH}/product?auth=basic sles15sp3-Module-Basesystem-product && \
+  zypper --non-interactive ar ${SLES_MIRROR}/Updates/SLE-Module-Basesystem/${SLES_VERSION}/${ARCH}/update?auth=basic sles15sp3-Module-Basesystem-update && \
+  zypper update -y && \
+  zypper install -y awk \
+                    curl \
+                    glibc-locale-base \
+                    gzip \
+                    iputils \
+                    jq \
+                    less \
+                    openssh \
+                    rsync \
+                    tar \
+                    vim \
+                    wget \
+                    which
+
+RUN zypper addrepo --no-gpgcheck -f https://artifactory.algol60.net/artifactory/csm-rpms/hpe/stable/sle-15sp2 algol60 && \
+    zypper install -y --allow-unsigned-rpm cray-uai-util
+ 
+RUN zypper clean -a && zypper --non-interactive rr --all && rm -f /etc/zypp/repos.d/* && rm -Rf /root/.zypp
 
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 
