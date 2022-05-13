@@ -76,7 +76,11 @@ pipeline {
             parallel {
                 stage('Image') {
                     steps {
+                        withCredentials([
+                            usernamePassword(credentialsId: 'artifactory-algol60', usernameVariable: 'SLES_REPO_USERNAME', passwordVariable: 'SLES_REPO_PASSWORD')
+                        ]) {
                         sh "make docker"
+                        }
                     }
                 }
 

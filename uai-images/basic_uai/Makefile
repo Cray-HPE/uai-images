@@ -1,6 +1,7 @@
+#
 # MIT License
 #
-# (C) Copyright [2020-2022] Hewlett Packard Enterprise Development LP
+# (C) Copyright 2020-2022 Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -19,15 +20,23 @@
 # OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
-
+#
 BASIC_UAI_IMAGE_NAME ?= cray-uai-sles15sp3
 BASIC_UAI_DOCKER_ARGS ?= --no-cache --progress plain
 VERSION ?= $(shell cat ../../.version)
 
-all: docker
+all: check-env docker
+
+check-env:
+	ifndef SLES_REPO_USERNAME
+		$(error SLES_REPO_USERNAME is undefined)
+	endif
+	ifndef SLES_REPO_PASSWORD
+		$(error SLES_REPO_PASSWORD is undefined)
+	endif
 
 docker:
-	docker build --pull ${BASIC_UAI_DOCKER_ARGS} --tag '${BASIC_UAI_IMAGE_NAME}:${VERSION}' .
+	docker build --pull ${BASIC_UAI_DOCKER_ARGS} --build-arg SLES_REPO_USERNAME --build-arg SLES_REPO_PASSWORD --tag '${BASIC_UAI_IMAGE_NAME}:${VERSION}' .
 
 # No unit test for this image
 unit_test:
