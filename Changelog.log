@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.3] - 2022-07-21
+- Updates to gateway-test.py to use better CAPMC URL
+
 ## [1.7.2] - 2022-07-18
 - Increase Chart version to account for HSM change
 
