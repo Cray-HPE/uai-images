@@ -109,7 +109,7 @@ def get_access_token(adminSecret, tokenNet, nmn_override):
     if not reachable(tokendomain):
         return None
    
-    try: 
+    try:
       r = requests.post(url, data = payload, verify = False)
     except Exception as err:
         print("{}".format(err))
@@ -178,7 +178,8 @@ def get_vs(service):
 def get_vs_gateways(vsyaml):
 
     vs = yaml.safe_load(vsyaml)
-    gws = vs['spec']['gateways']
+    specgws = vs['spec']['gateways']
+    gws = ' '.join(specgws).replace('services/','').split()
     return gws
 
 if __name__ == '__main__':
@@ -219,7 +220,7 @@ if __name__ == '__main__':
 
     reachnets = []
 
-    # Get the user network 
+    # Get the user network
     if numarg == 4:
       USER_NET = (sys.argv[3]).lower()
       if USER_NET not in ["can", "chn"]:
@@ -230,11 +231,12 @@ if __name__ == '__main__':
       if "can" in slsnetworks:
         USER_NET = "can"
       if "chn" in slsnetworks:
-        USER_NET = "chn"    
+        USER_NET = "chn"
     reachnets.append(USER_NET)
 
     if NODE_TYPE == "ncn":
       reachnets.append("nmnlb")
+      reachnets.append("hmnlb")
       reachnets.append("cmn")
     elif NODE_TYPE == "cn":
       reachnets.append("nmnlb")
@@ -256,7 +258,7 @@ if __name__ == '__main__':
       tokname = tokennet['name']
       print("\nGetting token for {}".format(tokname))
       mytok = get_access_token(ADMIN_SECRET, tokname, svcs['use-api-gw-override'])
- 
+
       if not mytok:
         # if the network in not in the set of reachable networks then it is expected
         # that we cannot get the token
@@ -276,7 +278,7 @@ if __name__ == '__main__':
       for net in svcs['test-networks']:
 
         netname = net['name'].lower()
-        if netname.lower() == "nmnlb" and svcs['use-api-gw-override']:
+        if netname == "nmnlb" and svcs['use-api-gw-override']:
            domain = "api-gw-service-nmn.local"
         else:
            domain = "api.{}.{}".format(netname, SYSTEM_DOMAIN)
@@ -308,7 +310,7 @@ if __name__ == '__main__':
           else:
               scheme = "http"
 
-          url = scheme + "://" + domain + "/" + svcpath 
+          url = scheme + "://" + domain + "/" + svcpath
 
           if NODE_TYPE == "ncn":
           # Getting the gateways from the Virtual Service definitions
@@ -317,7 +319,7 @@ if __name__ == '__main__':
               if vsyaml is None:
                  print("SKIP - [" + svcname + "]: " + url + " - virtual service not found")
                  continue
-        
+
               svcgws = get_vs_gateways(vsyaml)
           elif svcproject != "CSM":
               print("SKIP - [{}]: {}".format(svcname, url))
@@ -330,9 +332,13 @@ if __name__ == '__main__':
               else:
                   print("SKIP - [" + svcname + "]: " + url + " - gateways not found")
                   continue
-  
+
           if net['gateway'] not in svcgws:
-            svcexp = 404
+            # HMNLB behaves differently than other networks right now (CASMPET-5853)
+            if netname == "hmnlb":
+              svcexp = 403
+            else:
+              svcexp = 404
           # if the token we have does not match the network we are testing, we expect a 403
           # CMN tokens will work with NMN and vice versa, because they are using the same gateway in 1.2.
           elif tokname == "cmn" and netname != tokname and netname != "nmnlb":
@@ -347,7 +353,7 @@ if __name__ == '__main__':
           }
 
    
-          try:    
+          try:
               response = requests.request("GET", url, headers=headers, verify = False)
           except Exception as err:
               print("{}".format(err))
@@ -357,7 +363,7 @@ if __name__ == '__main__':
           if response.status_code == svcexp:
               print("PASS - [" + svcname + "]: " + url + " - " + str(response.status_code))
           else:
-              print("FAIL - [" + svcname + "]: " + url + " - " + str(response.status_code))
+              print("FAIL - [" + svcname + "]: " + url + " - " + str(response.status_code) + " (expecting: " + str(svcexp) + ")")
               TEST_FAILED = 1
 
     if TEST_FAILED:
