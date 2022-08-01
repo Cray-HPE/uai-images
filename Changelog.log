@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.4] - 2022-08-01
+- Updates to gateway-test.py to add hmnlb network tests 
+
 ## [1.7.3] - 2022-07-21
 - Updates to gateway-test.py to use better CAPMC URL
 
