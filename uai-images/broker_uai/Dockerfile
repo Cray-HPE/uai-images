@@ -26,7 +26,7 @@ FROM artifactory.algol60.net/csm-docker/stable/registry.suse.com/suse/sle15:15.3
 COPY zypper.sh /
 RUN --mount=type=secret,id=sles ./zypper.sh && rm /zypper.sh
 
-RUN zypper addrepo --no-gpgcheck -f https://artifactory.algol60.net/artifactory/csm-rpms/hpe/stable/sle-15sp2 algol60
+RUN zypper addrepo --no-gpgcheck -f https://${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD}@artifactory.algol60.net/artifactory/csm-rpms/hpe/stable/sle-15sp2 algol60
 
 WORKDIR /app
 
@@ -46,6 +46,8 @@ RUN ( \
      go get && \
      go build -o switchboard main.go \
     )
+
+RUN zypper clean -a && zypper --non-interactive rr --all && rm -f /etc/zypp/repos.d/* && rm -Rf /root/.zypp
 
 # Install switchboard
 
