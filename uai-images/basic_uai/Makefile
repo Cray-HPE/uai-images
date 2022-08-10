@@ -36,7 +36,7 @@ check-env:
 	endif
 
 docker:
-	docker build --pull ${BASIC_UAI_DOCKER_ARGS} --build-arg SLES_REPO_USERNAME --build-arg SLES_REPO_PASSWORD --tag '${BASIC_UAI_IMAGE_NAME}:${VERSION}' .
+	DOCKER_BUILDKIT=1 docker build --pull ${BASIC_UAI_DOCKER_ARGS} --secret id=sles,src=${ARTIFACTORY_SECRET_FILE} --tag '${BASIC_UAI_IMAGE_NAME}:${VERSION}' .
 
 # No unit test for this image
 unit_test:
