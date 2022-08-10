@@ -24,16 +24,9 @@
 BASIC_UAI_IMAGE_NAME ?= cray-uai-sles15sp3
 BASIC_UAI_DOCKER_ARGS ?= --no-cache --progress plain
 VERSION ?= $(shell cat ../../.version)
+ARTIFACTORY_SECRET_FILE ?= ../../secret-file
 
-all: check-env docker
-
-check-env:
-	ifndef SLES_REPO_USERNAME
-		$(error SLES_REPO_USERNAME is undefined)
-	endif
-	ifndef SLES_REPO_PASSWORD
-		$(error SLES_REPO_PASSWORD is undefined)
-	endif
+all: docker
 
 docker:
 	DOCKER_BUILDKIT=1 docker build --pull ${BASIC_UAI_DOCKER_ARGS} --secret id=sles,src=${ARTIFACTORY_SECRET_FILE} --tag '${BASIC_UAI_IMAGE_NAME}:${VERSION}' .

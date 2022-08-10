@@ -24,19 +24,16 @@
 BROKER_UAI_IMAGE_NAME ?= cray-uai-broker
 BROKER_UAI_DOCKER_ARGS ?= --no-cache --progress plain
 VERSION ?= $(shell cat ../../.version)
+ARTIFACTORY_SECRET_FILE ?= ../../secret-file
 
-all: check-env docker
-
-check-env:
-	ifndef SLES_REPO_USERNAME
-	        $(error SLES_REPO_USERNAME is undefined)
-	endif
-	ifndef SLES_REPO_PASSWORD
-	        $(error SLES_REPO_PASSWORD is undefined)
-	endif
+all: docker
 
 docker:
+<<<<<<< HEAD
 	DOCKER_BUILDKIT=1 docker build --pull ${BROKER_UAI_DOCKER_ARGS} --secret id=sles,src=${ARTIFACTORY_SECRET_FILE} --tag '${BROKER_UAI_IMAGE_NAME}:${VERSION}' .
+=======
+	docker build --pull ${BROKER_UAI_DOCKER_ARGS} --secret id=sles,src=${ARTIFACTORY_SECRET_FILE} --tag '${BROKER_UAI_IMAGE_NAME}:${VERSION}' .
+>>>>>>> 0f1cec2 (CASMSEC-344: Add support for docker secrets)
 
 # No unit test for this image
 unit_test:
