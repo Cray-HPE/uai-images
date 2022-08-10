@@ -24,7 +24,7 @@ zypper install -y awk \
                   wget \
                   which
 
-zypper addrepo --no-gpgcheck -f https://artifactory.algol60.net/artifactory/csm-rpms/hpe/stable/sle-15sp2 algol60
+zypper addrepo --no-gpgcheck -f https://${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD}@artifactory.algol60.net/artifactory/csm-rpms/hpe/stable/sle-15sp2 algol60
 zypper install -y --allow-unsigned-rpm cray-uai-util
 
 zypper clean -a && zypper --non-interactive rr --all && rm -f /etc/zypp/repos.d/*
