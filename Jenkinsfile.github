@@ -77,9 +77,8 @@ pipeline {
                 stage('Image') {
                     steps {
                         withCredentials([
-                            usernamePassword(credentialsId: 'artifactory-algol60', usernameVariable: 'SLES_REPO_USERNAME', passwordVariable: 'SLES_REPO_PASSWORD')
-                        ]) {
-                        sh "make docker"
+                            file(credentialsId: 'artifactory-algol60-readonly-file', variable: 'ARTIFACTORY_SECRET_FILE')]) {
+                                sh "make docker"
                         }
                     }
                 }
