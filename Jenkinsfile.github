@@ -76,9 +76,8 @@ pipeline {
             parallel {
                 stage('Image') {
                     steps {
-                        withCredentials([
-                            file(credentialsId: 'artifactory-algol60-readonly-file', variable: 'ARTIFACTORY_SECRET_FILE')]) {
-                                sh "make docker"
+                        script {
+                            sh "make docker"
                         }
                     }
                 }
