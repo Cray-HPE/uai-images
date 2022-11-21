@@ -2,7 +2,8 @@
 set -e +xv
 trap "rm -rf /root/.zypp" EXIT
 
-source /run/secrets/sles
+ARTIFACTORY_USERNAME=$(test -f /run/secrets/ARTIFACTORY_READONLY_USER && cat /run/secrets/ARTIFACTORY_READONLY_USER)
+ARTIFACTORY_PASSWORD=$(test -f /run/secrets/ARTIFACTORY_READONLY_TOKEN && cat /run/secrets/ARTIFACTORY_READONLY_TOKEN)
 SLES_MIRROR="https://${ARTIFACTORY_USERNAME:-}${ARTIFACTORY_PASSWORD+:}${ARTIFACTORY_PASSWORD}@artifactory.algol60.net/artifactory/sles-mirror"
 SLES_VERSION=15-SP3
 ARCH=x86_64

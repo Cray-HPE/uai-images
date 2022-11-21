@@ -24,14 +24,14 @@
 FROM artifactory.algol60.net/csm-docker/stable/registry.suse.com/suse/sle15:15.3 as base
 
 COPY zypper.sh /
-RUN --mount=type=secret,id=sles ./zypper.sh && rm /zypper.sh
+RUN --mount=type=secret,id=ARTIFACTORY_READONLY_USER --mount=type=secret,id=ARTIFACTORY_READONLY_TOKEN ./zypper.sh && rm /zypper.sh
 
 WORKDIR /app
 
 FROM base as build 
 
 COPY zypper-csm.sh /
-RUN --mount=type=secret,id=sles /zypper-csm.sh && rm /zypper-csm.sh
+RUN --mount=type=secret,id=ARTIFACTORY_READONLY_USER --mount=type=secret,id=ARTIFACTORY_READONLY_TOKEN /zypper-csm.sh && rm /zypper-csm.sh
 
 RUN ( \
      cd /usr/src/packages/SOURCES && \

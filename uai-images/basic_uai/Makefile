@@ -29,7 +29,7 @@ ARTIFACTORY_SECRET_FILE ?= ../../secret-file
 all: docker
 
 docker:
-	DOCKER_BUILDKIT=1 docker build --pull ${BASIC_UAI_DOCKER_ARGS} --secret id=sles,src=${ARTIFACTORY_SECRET_FILE} --tag '${BASIC_UAI_IMAGE_NAME}:${VERSION}' .
+	DOCKER_BUILDKIT=1 docker build --pull ${BASIC_UAI_DOCKER_ARGS} --tag '${BASIC_UAI_IMAGE_NAME}:${VERSION}' .
 
 # No unit test for this image
 unit_test:

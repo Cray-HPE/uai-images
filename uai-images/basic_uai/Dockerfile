@@ -24,7 +24,7 @@
 FROM artifactory.algol60.net/csm-docker/stable/registry.suse.com/suse/sle15:15.3 as base
 
 COPY zypper.sh /
-RUN --mount=type=secret,id=sles ./zypper.sh && rm /zypper.sh
+RUN --mount=type=secret,id=ARTIFACTORY_READONLY_USER --mount=type=secret,id=ARTIFACTORY_READONLY_TOKEN ./zypper.sh && rm /zypper.sh
 
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 
