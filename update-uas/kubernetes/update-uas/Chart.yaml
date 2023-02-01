@@ -24,7 +24,7 @@
 apiVersion: v2
 description: "End User UAI Image Installer Job"
 name: "update-uas"
-version: 1.8.0
+version: 1.8.1
 annotations:
   # 'artifacthub.io/images' below lists the images shipped according to
   # the following content in values.yaml:
